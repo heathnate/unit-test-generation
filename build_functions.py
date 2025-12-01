@@ -4,8 +4,8 @@ from strip_prompts import strip_code
 
 # Global constants. These can be changed to modify the data returned as needed
 PARQUET_PATH = 'hf://datasets/openai/openai_humaneval/openai_humaneval/test-00000-of-00001.parquet'
-STRIPPED_CSV = 'stripped_prompts.csv'
-ORIGINAL_CSV = 'original_prompts.csv'
+COMPLETE_CSV = 'complete_functions.csv'
+ORIGINAL_CSV = 'original_prompts_and_solutions.csv'
 LIMIT: Optional[int] = None
 PROMPT_COL = 'prompt'
 SOLUTION_COL = 'canonical_solution'
@@ -30,8 +30,7 @@ def process_dataframe(df: pd.DataFrame, limit: Optional[int] = None) -> pd.DataF
 
     # Create new dataframe with original prompts and stripped prompts
     out_df = pd.DataFrame({
-        PROMPT_COL: prompts.values,
-        'stripped_prompt': stripped_list,
+        'full_function': stripped_list,
     })
     return out_df
 
@@ -43,15 +42,15 @@ def main() -> None:
     df = pd.read_parquet(PARQUET_PATH)
 
     # Save original prompts to CSV
-    df[PROMPT_COL].to_csv(ORIGINAL_CSV, index=False)
-    print(f"Saved {len(df)} original prompts to '{ORIGINAL_CSV}'")
+    df[[PROMPT_COL, SOLUTION_COL]].to_csv(ORIGINAL_CSV, index=False)
+    print(f"Saved {len(df)} original prompts and solutions to '{ORIGINAL_CSV}'")
 
     # Create new dataframe with stripped prompts
     out_df = process_dataframe(df, limit=LIMIT)
 
     # Convert new dataframe to CSV
-    out_df.to_csv(STRIPPED_CSV, index=False)
-    print(f"Saved {len(out_df)} stripped prompts to '{STRIPPED_CSV}'")
+    out_df.to_csv(COMPLETE_CSV, index=False)
+    print(f"Saved {len(out_df)} cleaned functions to '{COMPLETE_CSV}'")
 
 
 if __name__ == '__main__':
