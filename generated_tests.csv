@@ -1,0 +1,170 @@
+full_function,generated_test
+"from typing import List
+def has_close_elements(numbers, threshold) -> bool:
+    for idx, elem in enumerate(numbers):
+        for idx2, elem2 in enumerate(numbers):
+            if idx != idx2:
+                distance = abs(elem - elem2)
+                if distance < threshold:
+                    return True
+
+    return False","```python
+import pytest
+from my_module import has_close_elements
+
+def test_has_close_elements_normal():
+    assert has_close_elements([1, 2, 3, 4, 5], 1) == True
+    assert has_close_elements([1, 2, 3, 4, 5], 0.5) == False
+    assert has_close_elements([10, 20, 30, 40, 50], 10) == True
+    assert has_close_elements([10, 20, 30, 40, 50], 11) == False
+
+def test_has_close_elements_edge():
+    assert has_close_elements([1], 1) == False
+    assert has_close_elements([], 1) == False
+    assert has_close_elements([1, 1], 0) == True
+    assert has_close_elements([1, 2], 0) == False
+
+def test_has_close_elements_error():
+    with pytest.raises(TypeError):
+        has_close_elements(None, 1)
+    with pytest.raises(TypeError):
+        has_close_elements([1, 2, 3], None)
+    with pytest.raises(TypeError):
+        has_close_elements(""123"", 1)
+    with pytest.raises(TypeError):
+        has_close_elements([1, 2, 3], ""1"")
+```
+In the above tests, `my_module` should be replaced with the actual module name where the function `has_close_elements` is defined."
+"from typing import List
+def separate_paren_groups(paren_string) -> List[str]:
+    result = []
+    current_string = []
+    current_depth = 0
+
+    for c in paren_string:
+        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        elif c == ')':
+            current_depth -= 1
+            current_string.append(c)
+
+            if current_depth == 0:
+                result.append(''.join(current_string))
+                current_string.clear()
+
+    return result","```python
+import pytest
+from typing import List
+from my_module import separate_paren_groups
+
+def test_separate_paren_groups():
+    # Test normal case
+    assert separate_paren_groups('((()))(())()()') == ['((()))', '(())', '()', '()']
+    
+    # Test edge case with empty string
+    assert separate_paren_groups('') == []
+    
+    # Test edge case with single pair of parentheses
+    assert separate_paren_groups('()') == ['()']
+    
+    # Test edge case with nested parentheses
+    assert separate_paren_groups('((()))') == ['((()))']
+    
+    # Test edge case with multiple separate parentheses
+    assert separate_paren_groups('()()()') == ['()', '()', '()']
+    
+    # Test error case with unbalanced parentheses
+    with pytest.raises(ValueError):
+        separate_paren_groups('(()')
+        
+    # Test error case with invalid characters
+    with pytest.raises(ValueError):
+        separate_paren_groups('((a))')
+```"
+"def truncate_number(number) -> float:
+    return number % 1.0","```python
+import pytest
+from my_module import truncate_number
+
+def test_truncate_number_normal_cases():
+    assert truncate_number(5.6) == 0.6
+    assert truncate_number(123.456) == 0.456
+    assert truncate_number(0.9999) == 0.9999
+
+def test_truncate_number_edge_cases():
+    assert truncate_number(0.0) == 0.0
+    assert truncate_number(1.0) == 0.0
+    assert truncate_number(-1.0) == 0.0
+    assert truncate_number(-0.5) == 0.5
+
+def test_truncate_number_error_cases():
+    with pytest.raises(TypeError):
+        truncate_number(""string"")
+    with pytest.raises(TypeError):
+        truncate_number(None)
+    with pytest.raises(TypeError):
+        truncate_number([])
+```
+Please replace `my_module` with the actual module name where `truncate_number` function is defined."
+"from typing import List
+def below_zero(operations) -> bool:
+    balance = 0
+
+    for op in operations:
+        balance += op
+        if balance < 0:
+            return True
+
+    return False","```python
+import pytest
+from my_module import below_zero
+
+def test_below_zero_normal_case():
+    operations = [10, -5, -10, 20]
+    assert below_zero(operations) == True
+
+def test_below_zero_edge_case_empty_list():
+    operations = []
+    assert below_zero(operations) == False
+
+def test_below_zero_edge_case_zero_balance():
+    operations = [10, -5, -5]
+    assert below_zero(operations) == False
+
+def test_below_zero_edge_case_negative_balance():
+    operations = [10, -5, -10]
+    assert below_zero(operations) == True
+
+def test_below_zero_error_case_non_numeric():
+    operations = [10, -5, 'a']
+    with pytest.raises(TypeError):
+        below_zero(operations)
+```"
+"from typing import List
+def mean_absolute_deviation(numbers) -> float:
+    mean = sum(numbers) / len(numbers)
+    return sum(abs(x - mean) for x in numbers) / len(numbers)","```python
+import pytest
+from my_module import mean_absolute_deviation  # replace 'my_module' with the actual module name
+
+def test_mean_absolute_deviation_normal():
+    assert mean_absolute_deviation([1, 2, 3, 4, 5]) == 1.2
+    assert mean_absolute_deviation([5, 5, 5, 5, 5]) == 0.0
+    assert mean_absolute_deviation([-1, -2, -3, -4, -5]) == 1.2
+
+def test_mean_absolute_deviation_edge():
+    assert mean_absolute_deviation([1]) == 0.0
+    assert mean_absolute_deviation([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == 0.0
+    assert mean_absolute_deviation([0, 0, 0, 0, 0]) == 0.0
+
+def test_mean_absolute_deviation_error():
+    with pytest.raises(ZeroDivisionError):
+        mean_absolute_deviation([])
+
+    with pytest.raises(TypeError):
+        mean_absolute_deviation(None)
+
+    with pytest.raises(TypeError):
+        mean_absolute_deviation(""string"")
+```"
