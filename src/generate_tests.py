@@ -1,14 +1,17 @@
 import os
 import time
 from typing import List, Optional
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
 
 from openai import OpenAI
 
-COMPLETE_CSV = "complete_functions.csv"
-OUTPUT_CSV = "generated_tests.csv"
+# Resolve data files relative to the repository root (two levels up from this file)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+COMPLETE_CSV = str(REPO_ROOT / "data" / "complete_functions.csv")
+OUTPUT_CSV = str(REPO_ROOT / "data" / "generated_tests.csv")
 MODEL = os.environ.get("OPENAI_MODEL", "gpt-4")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -21,8 +24,10 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 SYS_PROMPT = (
     "You are an expert Python developer who writes concise pytest unit tests. "
     "Given a single Python function implementation, produce a pytest-compatible test file that "
-    "imports the function (if needed) and contains multiple meaningful tests (normal, edge, and error cases). "
-    "Return only valid Python test code with no extra commentary or explanation."
+    "contains multiple meaningful tests (normal, edge, and error cases). Do not make any references to functions " \
+    "that are not defined in the provided function code or standard libraries. " \
+    "Return only valid Python test code with no extra commentary or explanation. Do not under any circumstances " \
+    "write any comments or text that is not runnable Python code."
 )
 
 
@@ -34,7 +39,8 @@ def make_user_prompt(function_code: str, index: int) -> str:
         "```\n\n"
         "Write pytest tests for the function above. Include any needed imports and fixtures. "
         "Prefer simple, deterministic tests that can run without network or unusual side effects. "
-        "If the function requires dependencies, mock them. Return only Python test code."
+        "If the function requires dependencies, mock them. Return only Python test code. Do not under "
+        "any circumstances write any comments or text that is not runnable Python code."
     )
 
 def generate_tests_for_functions(functions: List[str], retry_times: int = 3, delay: float = 1.0) -> List[Optional[str]]:
