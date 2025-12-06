@@ -21,14 +21,18 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 # Prompt to pass to GPT-4 for generating tests
-SYS_PROMPT = (
-    "You are an expert Python developer who writes concise pytest unit tests. "
-    "Given a single Python function implementation, produce a pytest-compatible test file that "
-    "contains multiple meaningful tests (normal, edge, and error cases). Do not make any references to functions " \
-    "that are not defined in the provided function code or standard libraries. " \
-    "Return only valid Python test code with no extra commentary or explanation. Do not under any circumstances " \
-    "write any comments or text that is not runnable Python code."
-)
+SYS_PROMPT = ("""
+    You are an expert Python developer who writes concise pytest unit tests.
+    You will be given a single Python function implementation.
+
+    Your output MUST:
+    1. Include the full function implementation EXACTLY as provided, with no modifications.
+    2. Place the function implementation at the top of the output.
+    3. Write pytest tests BELOW the function implementation.
+    4. NOT import the function from any module.
+    5. NOT reference any functions or modules that are not included in the provided code.
+    6. Return ONLY runnable Python code — no comments, no explanations, no text outside code.
+""")
 
 
 def make_user_prompt(function_code: str, index: int) -> str:
@@ -37,11 +41,16 @@ def make_user_prompt(function_code: str, index: int) -> str:
         "```python\n"
         f"{function_code}\n"
         "```\n\n"
-        "Write pytest tests for the function above. Include any needed imports and fixtures. "
-        "Prefer simple, deterministic tests that can run without network or unusual side effects. "
-        "If the function requires dependencies, mock them. Return only Python test code. Do not under "
-        "any circumstances write any comments or text that is not runnable Python code."
-    )
+        """Write pytest tests for the function provided.
+
+        You MUST include:
+        - The function implementation EXACTLY as provided (verbatim, unmodified).
+        - Pytest tests that directly call the function.
+        - Any needed imports (except importing the function).
+        - No external references.
+
+        Return ONLY valid Python code with no comments.
+    """)
 
 def generate_tests_for_functions(functions: List[str], retry_times: int = 3, delay: float = 1.0) -> List[Optional[str]]:
     results: List[Optional[str]] = []
